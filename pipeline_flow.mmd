@@ -1,0 +1,6 @@
+flowchart TD
+    A["Feature engineering → 947 cols"] --> B["Stratified train/val split"]
+    B --> C["5-fold OOF evaluation"]
+    C --> D["OOF vs holdout comparison"]
+    D --> E["Train RF, XGBoost, LightGBM"]
+    E --> F["Metrics and feature importance"]

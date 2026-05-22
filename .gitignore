@@ -2,3 +2,9 @@ venv/
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
+
+# Refact Buddy local runtime state (auto-updated)
+.refact/buddy/state.json
+.refact/buddy/settings.json
+.refact/buddy/memory_ops.jsonl
+.refact/buddy/runtime_queue.jsonl
