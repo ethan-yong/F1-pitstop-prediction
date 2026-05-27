@@ -1,6 +1,66 @@
-flowchart TD
-    A["Feature engineering → 947 cols"] --> B["Stratified train/val split"]
-    B --> C["5-fold OOF evaluation"]
-    C --> D["OOF vs holdout comparison"]
-    D --> E["Train RF, XGBoost, LightGBM"]
-    E --> F["Metrics and feature importance"]
+%% F1 Pit-Stop Prediction — pipeline overview (render with Mermaid)
+%% Matches staged layout: Pre-processing → Dataset Splitting → Model Training
+
+flowchart LR
+    subgraph PP["Pre-processing"]
+        direction LR
+        OHE["One-hot Encode"] -.-> FE["Feature Engineering<br/>→ 947 cols"]
+    end
+
+    subgraph DS["Dataset Splitting"]
+        direction TB
+        SPLIT["Stratified Train/Val Split"] -.-> OOF_TITLE["5-Fold OOF Evaluation"]
+
+        subgraph OOF["Training set split into 5 equal folds — each round: 4 train · 1 validation"]
+            direction TB
+
+            subgraph F1["Fold 1"]
+                direction LR
+                F1V["Val<br/>20%"] --- F1T2["Train<br/>20%"] --- F1T3["Train<br/>20%"] --- F1T4["Train<br/>20%"] --- F1T5["Train<br/>20%"]
+            end
+
+            subgraph F2["Fold 2"]
+                direction LR
+                F2T1["Train<br/>20%"] --- F2V["Val<br/>20%"] --- F2T3["Train<br/>20%"] --- F2T4["Train<br/>20%"] --- F2T5["Train<br/>20%"]
+            end
+
+            subgraph F3["Fold 3"]
+                direction LR
+                F3T1["Train<br/>20%"] --- F3T2["Train<br/>20%"] --- F3V["Val<br/>20%"] --- F3T4["Train<br/>20%"] --- F3T5["Train<br/>20%"]
+            end
+
+            subgraph F4["Fold 4"]
+                direction LR
+                F4T1["Train<br/>20%"] --- F4T2["Train<br/>20%"] --- F4T3["Train<br/>20%"] --- F4V["Val<br/>20%"] --- F4T5["Train<br/>20%"]
+            end
+
+            subgraph F5["Fold 5"]
+                direction LR
+                F5T1["Train<br/>20%"] --- F5T2["Train<br/>20%"] --- F5T3["Train<br/>20%"] --- F5T4["Train<br/>20%"] --- F5V["Val<br/>20%"]
+            end
+        end
+
+        OOF_TITLE -.-> OOF
+        OOF -.-> OOF_LOOP["For each fold:<br/>fit on 4 Train segments →<br/>predict Val segment (OOF probs)"]
+        OOF_LOOP -.-> OOF_MERGE["Stack 5 Val predictions<br/>→ full OOF vector on train"]
+    end
+
+    subgraph MT["Model Training & Evaluation"]
+        direction LR
+        TRAIN["Train RF, XGBoost, LightGBM"] -.-> MET["Metrics and<br/>Feature Importance"]
+    end
+
+    FE -.-> SPLIT
+    OOF_MERGE -.-> TRAIN
+
+    %% Stage backgrounds (match reference: purple / green / red)
+    style PP fill:#e8e0f5,stroke:#7b68a6,stroke-width:2px
+    style DS fill:#d4edda,stroke:#5a9e6f,stroke-width:2px
+    style MT fill:#f8d7da,stroke:#c85a5a,stroke-width:2px
+
+    %% Fold segment colors: train = green, validation = orange
+    classDef train fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20,font-size:11px
+    classDef val fill:#ffccbc,stroke:#e64a19,color:#bf360c,font-size:11px
+
+    class F1T2,F1T3,F1T4,F1T5,F2T1,F2T3,F2T4,F2T5,F3T1,F3T2,F3T4,F3T5,F4T1,F4T2,F4T3,F4T5,F5T1,F5T2,F5T3,F5T4 train
+    class F1V,F2V,F3V,F4V,F5V val

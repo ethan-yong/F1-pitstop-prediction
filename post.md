@@ -1,4 +1,4 @@
-I've been working through a Kaggle Playground problem that asks a simple but strategy-heavy question: will this car pit on the next lap?
+Would like to share I've been working through a Kaggle Playground problem that asks a simple but strategy-heavy question: will this car pit on the next lap?
 
 The dataset is lap-level Formula 1 data (tyre life, stint, race progress, lap times, position changes, and more) with a binary target called `PitNextLap`. Roughly **80%** of laps are "no pit" and only about **20%** are pit next lap (~4:1). That imbalance shaped almost every modeling decision, not just the final metric I reported.
 
