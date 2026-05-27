@@ -1,4 +1,5 @@
 kagglehub
+kaggle
 pandas
 numpy
 matplotlib
